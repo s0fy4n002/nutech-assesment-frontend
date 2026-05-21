@@ -10,7 +10,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <RootLayout />, // Layout yang punya Navbar/Sidebar
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <App /> },
       { path: "about", element: <About /> },
     ],
   },
