@@ -1,5 +1,6 @@
 import React from "react";
 import PromoSlider from "@/components/pages/PromoSlider";
+import BalanceCard from "@/components/BalanceCard";
 
 export default function Home() {
   const menus = [
@@ -26,7 +27,6 @@ export default function Home() {
   ];
 
   const [saldo, setSaldo] = React.useState(100000);
-  const [showSaldo, setShowSaldo] = React.useState(false);
 
   return (
     <>
@@ -44,22 +44,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="bg-red-600 rounded-2xl p-6 text-white shadow-lg">
-          <p className="mb-2">Saldo anda</p>
-
-          {/* 2. Logika tampilan saldo */}
-          <h1 className="text-3xl font-bold mb-4">
-            {showSaldo ? `Rp ${saldo.toLocaleString("id-ID")}` : "Rp ••••••••"}
-          </h1>
-
-          {/* 3. Tombol untuk toggle */}
-          <p
-            className="text-sm cursor-pointer underline"
-            onClick={() => setShowSaldo(!showSaldo)}
-          >
-            {showSaldo ? "Tutup Saldo" : "Lihat Saldo"}
-          </p>
-        </div>
+        
+        <BalanceCard saldo={saldo} />
       </div>
 
       {/* Menu Grid */}
