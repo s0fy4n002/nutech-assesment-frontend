@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router";
 
 import RootLayout from "./layouts/RootLayout.jsx";
-import About from "./pages/About.jsx";
 import Login from "./pages/auth/Login.jsx";
 import AuthLayout from "./layouts/AuthLayout.jsx";
 import Register from "./pages/auth/Register.jsx";
 import Home from "./pages/Home.jsx";
+import TopUp from "./pages/Topup.jsx";
 
 const router = createBrowserRouter([
   {
@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     element: <RootLayout />, // Layout yang punya Navbar/Sidebar
     children: [
       { index: true, element: <Home /> },
-      { path: "about", element: <About /> }
+      { path: "topup", element: <TopUp /> }
     ],
   },
   {
