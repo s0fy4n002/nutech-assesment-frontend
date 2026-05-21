@@ -67,9 +67,9 @@ export default function TopUp() {
             </div>
 
             <button
-              disabled={!nominal || nominal < 10000}
+              disabled={!nominal || nominal < 10000 || nominal > 1000000}
               className={`w-full rounded-md py-3 font-semibold transition-all ${
-                nominal >= 10000
+                nominal >= 10000 && nominal <= 1000000
                   ? "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
