@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { CreditCard } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function TopUp() {
   // State untuk menampung nominal input
@@ -66,16 +77,33 @@ export default function TopUp() {
               />
             </div>
 
-            <button
-              disabled={!nominal || nominal < 10000 || nominal > 1000000}
-              className={`w-full rounded-md py-3 font-semibold transition-all ${
-                nominal >= 10000 && nominal <= 1000000
-                  ? "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              Top Up
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  disabled={!nominal || nominal < 10000 || nominal > 1000000}
+                  className={`w-full rounded-md py-3 font-semibold transition-all ${
+                    nominal >= 10000 && nominal <= 1000000
+                      ? "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                >
+                  Top Up
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           {/* Kolom Kanan: Pilihan Nominal Cepat */}
