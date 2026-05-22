@@ -1,22 +1,10 @@
 import React from "react";
 import PromoSlider from "@/components/pages/PromoSlider";
 import BalanceCard from "@/components/BalanceCard";
+import { Link } from "react-router";
+import { SERVICES } from "@/lib/utils";
 
 export default function Home() {
-  const menus = [
-    { name: "PBB", icon: "/assets/PBB.png" },
-    { name: "Listrik", icon: "/assets/Listrik.png" },
-    { name: "Pulsa", icon: "/assets/Pulsa.png" },
-    { name: "PDAM", icon: "/assets/PDAM.png" },
-    { name: "PGN", icon: "/assets/PGN.png" },
-    { name: "TV", icon: "/assets/Televisi.png" },
-    { name: "Musik", icon: "/assets/Musik.png" },
-    { name: "Game", icon: "/assets/Game.png" },
-    { name: "Makanan", icon: "/assets/Voucher Makanan.png" },
-    { name: "Kurban", icon: "/assets/Kurban.png" },
-    { name: "Zakat", icon: "/assets/Zakat.png" },
-    { name: "Data", icon: "/assets/Paket Data.png" },
-  ];
 
   const banners = [
     { id: 1, image: "/assets/Banner 1.png" },
@@ -44,18 +32,18 @@ export default function Home() {
           </div>
         </div>
 
-        
         <BalanceCard saldo={saldo} />
       </div>
 
       {/* Menu Grid */}
       <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-4 mb-10">
-        {menus.map((m) => (
-          <div
+        {SERVICES.map((m) => (
+          <Link
             key={m.name}
+            to={`/payment?service=${m.id}`}
             className="flex flex-col items-center gap-2 cursor-pointer group"
           >
-            <div className="group-hover:bg-gray-100 w-16 h-16 flex items-center justify-center">
+            <div className="group-hover:bg-gray-100 w-16 h-16 flex items-center justify-center rounded-full transition-colors">
               <img
                 src={m.icon}
                 alt={m.name}
@@ -63,7 +51,7 @@ export default function Home() {
               />
             </div>
             <span className="text-[10px] text-gray-600">{m.name}</span>
-          </div>
+          </Link>
         ))}
       </div>
 

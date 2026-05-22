@@ -6,6 +6,7 @@ import AuthLayout from "./layouts/AuthLayout.jsx";
 import Register from "./pages/auth/Register.jsx";
 import Home from "./pages/Home.jsx";
 import TopUp from "./pages/Topup.jsx";
+import Payment from "./pages/Payment.jsx";
 
 const router = createBrowserRouter([
   {
@@ -13,7 +14,8 @@ const router = createBrowserRouter([
     element: <RootLayout />, // Layout yang punya Navbar/Sidebar
     children: [
       { index: true, element: <Home /> },
-      { path: "topup", element: <TopUp /> }
+      { path: "topup", element: <TopUp /> },
+      { path: "payment", element: <Payment /> }
     ],
   },
   {
