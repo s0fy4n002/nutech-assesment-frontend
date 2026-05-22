@@ -11,7 +11,7 @@ export default function CustomAlertDialog({ isOpen, onClose, children }) {
         agar saat kita mengklik isi dialog (konten), dialog tidak ikut tertutup.
       */}
       <div 
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200"
+        className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200"
         onClick={(e) => e.stopPropagation()} 
       >
         {children}
