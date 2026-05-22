@@ -1,13 +1,36 @@
 import { useState } from "react";
-import { CreditCard } from "lucide-react";
-import BalanceCard from "@/components/BalanceCard";
+import { CheckCircle, CreditCard } from "lucide-react";
 import CustomAlertDialog from "@/components/pages/CustomAlertDialog";
 import { useCurrencyInput } from "@/hooks/useCurrencyInput";
 import Profile from "@/components/pages/Profile";
+import { useSelector } from "react-redux";
+import apiClient from "@/lib/api";
+
 export default function TopUp() {
-  
   const [isOpen, setIsOpen] = useState(false);
   const nominalInput = useCurrencyInput("");
+  const [loadingTopup, setLoadingTopup] = useState(false);
+  const [showModalSuccess, setModalSuccess] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+
+  const handleTopUp = async () => {
+    setLoadingTopup(true);
+    try {
+      const servicesResponse = await apiClient(
+        "/topup",
+        "POST",
+        { top_up_amount: nominalInput.value },
+        token,
+      );
+      console.log("Top Up Response:", servicesResponse);
+      setIsOpen(false);
+      setModalSuccess(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingTopup(false);
+    }
+  };
 
   // Daftar nominal cepat (quick pick)
   const quickAmounts = [
@@ -48,7 +71,11 @@ export default function TopUp() {
 
             <button
               onClick={() => setIsOpen(true)}
-              disabled={!nominalInput.value || nominalInput.value < 10000 || nominalInput.value > 1000000}
+              disabled={
+                !nominalInput.value ||
+                nominalInput.value < 10000 ||
+                nominalInput.value > 1000000
+              }
               className={`w-full rounded-md py-3 font-semibold transition-all ${
                 nominalInput.value >= 10000 && nominalInput.value <= 1000000
                   ? "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]"
@@ -74,31 +101,53 @@ export default function TopUp() {
         </div>
       </div>
 
-      {/* <CustomAlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <CustomAlertDialog
+        isOpen={showModalSuccess}
+        onClose={() => setModalSuccess(false)}
+      >
         <div className="text-center">
           <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
-          <h2 className="text-xl font-bold">Berhasil!</h2>
-          <p className="text-gray-600 mt-2">Transaksi Anda telah diproses.</p>
+          <p className="text-gray-600 mt-2">Top Up sebesar.</p>
+          <h2 className="text-xl font-bold">Rp {nominalInput.displayValue}</h2>
+          <p>Berhasil</p>
+
           <button
-            onClick={() => setIsOpen(false)}
-            className="mt-6 w-full bg-red-600 text-white py-2 rounded-lg"
+            onClick={() => setModalSuccess(false)}
+            className="mt-6 w-full text-gray-600 cursor-pointer"
           >
-            Kembali
+            Kembali ke Beranda
           </button>
         </div>
-      </CustomAlertDialog> */}
+      </CustomAlertDialog>
 
       <CustomAlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="text-center">
-          {/* <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" /> */}
-          <img src="/assets/logo.png" alt="logo" className="mx-auto h-10 w-10 mb-4" />
+          <img
+            src="/assets/logo.png"
+            alt="logo"
+            className="mx-auto h-10 w-10 mb-4"
+          />
           <p className="text-gray-600 mt-2">Anda yakin untuk Topup sebesar</p>
-          <h2 className="text-2xl font-bold">{nominalInput.displayValue}</h2>
+          <h2 className="text-2xl font-bold">
+            Rp {nominalInput.displayValue} ?
+          </h2>
+
           <button
-            onClick={() => setIsOpen(false)}
-            className="mt-6 w-full bg-red-600 text-white py-2 rounded-lg"
+            disabled={loadingTopup}
+            onClick={handleTopUp}
+            className={`mt-6 w-full ${loadingTopup ? "text-gray-600":"text-red-600"} cursor-pointer`}
           >
-            Kembali
+            {loadingTopup
+              ? (<><div className="my-spinner"></div> <span>Loading...</span></>)
+              : "Ya, lanjutkan Top Up"}
+          </button>
+
+          <button
+            disabled={loadingTopup}
+            onClick={() => setIsOpen(false)}
+            className={`mt-6 w-full text-gray-600 cursor-pointer`}
+          >
+            Batalkan
           </button>
         </div>
       </CustomAlertDialog>

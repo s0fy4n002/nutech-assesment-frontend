@@ -5,6 +5,25 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+/* Spinner sederhana */
+.my-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(88, 86, 86, 0.3); /* Warna merah pudar */
+  border-top: 3px solid #3e3d3d; /* Warna merah pekat */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
