@@ -15,7 +15,6 @@ export default function Payment() {
     return <Navigate to="/404" replace />;
   }
 
-  const [nominal, setNominal] = useState("10000");
   const nominalInput = useCurrencyInput("");
 
   return (
