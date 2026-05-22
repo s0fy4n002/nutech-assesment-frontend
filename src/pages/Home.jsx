@@ -1,13 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PromoSlider from "@/components/pages/PromoSlider";
 import BalanceCard from "@/components/BalanceCard";
 import { Link } from "react-router";
 import apiClient from "@/lib/api";
 import { useSelector } from "react-redux";
+import Loading from "@/components/Loading";
 
 export default function Home() {
-  const [banners, setBanners] = React.useState([]);
-  const [services, setServices] = React.useState([]);
+  const [banners, setBanners] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
 
   const token = localStorage.getItem("token");
   const [saldo, setSaldo] = React.useState(0);
@@ -45,11 +48,17 @@ export default function Home() {
         setBanners(bannerResponse.data);
       } catch (error) {
         console.error(error);
+      }finally{
+        setLoading(false);
       }
     }
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>

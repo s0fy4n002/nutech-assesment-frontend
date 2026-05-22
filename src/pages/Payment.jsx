@@ -5,6 +5,7 @@ import { Navigate, useSearchParams } from "react-router";
 import { useCurrencyInput } from "@/hooks/useCurrencyInput";
 import { useSelector } from "react-redux";
 import apiClient from "@/lib/api";
+import Loading from "@/components/Loading";
 
 export default function Payment() {
   const [searchParams] = useSearchParams();
@@ -40,7 +41,7 @@ export default function Payment() {
   }, [currentService]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
 
