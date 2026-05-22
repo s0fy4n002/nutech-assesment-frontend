@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from "react";
 import PromoSlider from "@/components/pages/PromoSlider";
-import BalanceCard from "@/components/BalanceCard";
 import { Link } from "react-router";
 import apiClient from "@/lib/api";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
+import Profile from "@/components/pages/Profile";
 
 export default function Home() {
   const [banners, setBanners] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   
-
-  const token = localStorage.getItem("token");
-  const [saldo, setSaldo] = React.useState(0);
-
-  const [profile, setProfile] = React.useState({
-    email: "",
-    first_name: "Kristanto",
-    last_name: "Wibowo",
-    profile_image: "/assets/Profile Photo.png",
-  });
+  const token = useSelector((state) => state.auth.token);
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   if (!isAuthenticated) {
@@ -31,19 +22,12 @@ export default function Home() {
     async function fetchData() {
       try {
         const [
-          profileResponse,
-          balanceResponse,
           servicesResponse,
           bannerResponse,
         ] = await Promise.all([
-          apiClient("/profile", "GET", null, token),
-          apiClient("/balance", "GET", null, token),
           apiClient("/services", "GET", null, token),
           apiClient("/banner", "GET", null, token),
         ]);
-
-        setProfile(profileResponse.data);
-        setSaldo(balanceResponse.data.saldo);
         setServices(servicesResponse.data);
         setBanners(bannerResponse.data);
       } catch (error) {
@@ -62,30 +46,8 @@ export default function Home() {
 
   return (
     <>
-      {/* Profile & Balance */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        <div className="flex items-center gap-4">
-          <img
-            src={profile.profile_image}
-            onError={(e) => {
-              e.target.onerror = null; // Mencegah loop jika default image juga error
-              e.target.src = "/assets/Profile Photo.png"; // Ganti dengan path ikon default Anda
-            }}
-            className="w-16 h-16 rounded-full"
-            alt="avatar"
-          />
-          <div>
-            <p className="text-gray-500">Selamat datang,</p>
-            <h2 className="text-xl font-bold">
-              {profile.first_name} {profile.last_name}
-            </h2>
-          </div>
-        </div>
+      <Profile />
 
-        <BalanceCard saldo={saldo} />
-      </div>
-
-      {/* Menu Grid */}
       <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-4 mb-10">
         {services.map((m) => (
           <Link
@@ -107,7 +69,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Promos */}
       <h3 className="font-bold text-lg mb-4">Temukan promo menarik</h3>
       <PromoSlider banners={banners} />
     </>

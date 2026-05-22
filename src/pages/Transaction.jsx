@@ -1,4 +1,7 @@
-import BalanceCard from "@/components/BalanceCard";
+import Profile from "@/components/pages/Profile";
+import apiClient from "@/lib/api";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function Transaction() {
   // Contoh data transaksi
@@ -8,25 +11,36 @@ export default function Transaction() {
     { id: 3, type: "PAYMENT", amount: 10000, date: "17 Agustus 2023", time: "11:10 WIB", description: "Listrik Pascabayar" },
   ];
 
+  const token = useSelector((state) => state.auth.token);
+  const [saldo, setSaldo] = useState(0);
+  const [profile, setProfile] = useState({
+      email: "",
+      first_name: "Kristanto",
+      last_name: "Wibowo",
+      profile_image: "/assets/Profile Photo.png",
+    });
+
+
+  useEffect(() => {
+      async function fetchData() {
+        try {
+          const profileResponse= await  apiClient("/profile", "GET", null, token);
+
+          setProfile(profileResponse.data);        
+        } catch (error) {
+          console.error(error);
+        }finally {
+          setLoading(false);
+        }
+      }
+  
+      fetchData();
+    }, []);
+
+
   return (
     <div className="space-y-8">
-      {/* 1. Header & Balance */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="md:col-span-2 flex items-center gap-4">
-          <img
-            src="/assets/Profile Photo.png"
-            alt="Avatar"
-            className="h-16 w-16 rounded-full border border-gray-200"
-          />
-          <div>
-            <p className="text-gray-500 text-lg">Selamat datang,</p>
-            <h2 className="text-3xl font-bold text-gray-900">Kristanto Wibowo</h2>
-          </div>
-        </div>
-        <div className="md:col-span-3">
-          <BalanceCard saldo={0} />
-        </div>
-      </div>
+      <Profile profile={profile} saldo={saldo} />
 
       {/* 2. Daftar Transaksi */}
       <div className="pt-4">
