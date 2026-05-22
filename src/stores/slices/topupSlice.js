@@ -31,10 +31,13 @@ const topupSlice = createSlice({
     updateAmount: (state, action) => {
       state.amount += parseInt(action.payload, 10);
     },
+    updateAmountPayment: (state, action) => {
+      state.amount -= parseInt(action.payload, 10);
+    },
 
   },
  
 });
 
-export const { setAmount, setTopupValue, updateAmount } = topupSlice.actions;
+export const { setAmount, setTopupValue, updateAmount, updateAmountPayment } = topupSlice.actions;
 export default topupSlice.reducer;

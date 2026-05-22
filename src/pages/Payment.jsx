@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
-import { CheckCircle, CreditCard } from "lucide-react";
+import { CheckCircle, CircleX, CreditCard } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
 import { Navigate, useSearchParams } from "react-router";
 import { useCurrencyInput } from "@/hooks/useCurrencyInput";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import apiClient from "@/lib/api";
 import Loading from "@/components/Loading";
 import Profile from "@/components/pages/Profile";
 import CustomAlertDialog from "@/components/pages/CustomAlertDialog";
 import { formatNumber } from "@/lib/utils";
+import { updateAmountPayment } from "@/stores/slices/topupSlice";
 
 export default function Payment() {
   const [searchParams] = useSearchParams();
   const serviceKey = searchParams.get("service");
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
   const [loadingTopup, setLoadingTopup] = useState(false);
   const [showModalSuccess, setModalSuccess] = useState(false);
-
+  const [showModalError, setModalError] = useState(false);
+  const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
   const nominalInput = useCurrencyInput("");
@@ -64,12 +67,14 @@ export default function Payment() {
 
       console.log("Top Up Response:", servicesResponse);
 
-
-      setIsOpen(false);
+      dispatch(updateAmountPayment(nominalInput.value));
       setModalSuccess(true);
     } catch (error) {
+      setModalError(true);
+      setErrorMessage(error.message)
       console.error("Topup Error:", error);
     } finally {
+      setIsOpen(false);
       setLoadingTopup(false);
     }
   };
@@ -135,6 +140,25 @@ export default function Payment() {
 
           <button
             onClick={() => setModalSuccess(false)}
+            className="mt-6 w-full text-red-600 cursor-pointer"
+          >
+            Kembali ke Beranda
+          </button>
+        </div>
+      </CustomAlertDialog>
+
+      <CustomAlertDialog
+        isOpen={showModalError}
+        onClose={() => setModalError(false)}
+      >
+        <div className="text-center">
+          <CircleX className="mx-auto h-16 w-16 text-red-500 mb-4" />
+          <p className="text-gray-600 my-2">Pembayaran {currentService.service_name} sebesar.</p>
+          <h2 className="text-xl font-bold mb-2">Rp. {formatNumber(currentService.service_tariff.toString())}</h2>
+          <p className="text-gray-600">gagal</p>
+
+          <button
+            onClick={() => setModalError(false)}
             className="mt-6 w-full text-red-600 cursor-pointer"
           >
             Kembali ke Beranda
