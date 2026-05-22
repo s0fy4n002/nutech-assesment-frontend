@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { CheckCircle, CreditCard } from "lucide-react";
 import CustomAlertDialog from "@/components/pages/CustomAlertDialog";
-import { useCurrencyInput } from "@/hooks/useCurrencyInput";
 import Profile from "@/components/pages/Profile";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import apiClient from "@/lib/api";
+import { updateAmount, setTopupValue } from "@/stores/slices/topupSlice";
 
 export default function TopUp() {
   const [isOpen, setIsOpen] = useState(false);
-  const nominalInput = useCurrencyInput("");
   const [loadingTopup, setLoadingTopup] = useState(false);
   const [showModalSuccess, setModalSuccess] = useState(false);
+
   const token = useSelector((state) => state.auth.token);
+  const displayTopupValue = useSelector((state) => state.topup.displayTopupValue);
+  const topupValue = useSelector((state) => state.topup.topupValue);
+  console.log("Topup Value from Redux:", topupValue);
+  const dispatch = useDispatch();
 
   const handleTopUp = async () => {
     setLoadingTopup(true);
@@ -19,20 +23,23 @@ export default function TopUp() {
       const servicesResponse = await apiClient(
         "/topup",
         "POST",
-        { top_up_amount: nominalInput.value },
+        { top_up_amount: topupValue },
         token,
       );
+
       console.log("Top Up Response:", servicesResponse);
+
+      dispatch(updateAmount(topupValue));
+
       setIsOpen(false);
       setModalSuccess(true);
     } catch (error) {
-      console.error(error);
+      console.error("Topup Error:", error);
     } finally {
       setLoadingTopup(false);
     }
   };
 
-  // Daftar nominal cepat (quick pick)
   const quickAmounts = [
     { label: "Rp10.000", value: 10000 },
     { label: "Rp20.000", value: 20000 },
@@ -63,21 +70,19 @@ export default function TopUp() {
               <input
                 type="text"
                 placeholder="masukan nominal Top Up"
-                value={nominalInput.displayValue}
-                onChange={(e) => nominalInput.handleChange(e.target.value)}
+                value={displayTopupValue ? `Rp ${displayTopupValue}` : ""}
+                onChange={(e) => {
+                  dispatch(setTopupValue(e.target.value));
+                }}
                 className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 placeholder:text-gray-400 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600"
               />
             </div>
 
             <button
               onClick={() => setIsOpen(true)}
-              disabled={
-                !nominalInput.value ||
-                nominalInput.value < 10000 ||
-                nominalInput.value > 1000000
-              }
+              disabled={!topupValue || topupValue < 10000 || topupValue > 1000000}
               className={`w-full rounded-md py-3 font-semibold transition-all ${
-                nominalInput.value >= 10000 && nominalInput.value <= 1000000
+                topupValue >= 10000 && topupValue <= 1000000
                   ? "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
@@ -91,7 +96,7 @@ export default function TopUp() {
             {quickAmounts.map((item) => (
               <button
                 key={item.value}
-                onClick={() => nominalInput.handleChange(item.value.toString())}
+                onClick={() => dispatch(setTopupValue(item.value))}
                 className="flex items-center justify-center rounded-md border border-gray-300 py-3 px-2 text-sm font-medium text-gray-700 transition-colors hover:border-red-600 hover:text-red-600 active:bg-red-50"
               >
                 {item.label}
@@ -108,7 +113,7 @@ export default function TopUp() {
         <div className="text-center">
           <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
           <p className="text-gray-600 mt-2">Top Up sebesar.</p>
-          <h2 className="text-xl font-bold">Rp {nominalInput.displayValue}</h2>
+          <h2 className="text-xl font-bold">Rp {topupValue}</h2>
           <p>Berhasil</p>
 
           <button
@@ -120,7 +125,10 @@ export default function TopUp() {
         </div>
       </CustomAlertDialog>
 
-      <CustomAlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <CustomAlertDialog
+        isOpen={isOpen}
+        onClose={() => !loadingTopup && setIsOpen(false)}
+      >
         <div className="text-center">
           <img
             src="/assets/logo.png"
@@ -129,26 +137,34 @@ export default function TopUp() {
           />
           <p className="text-gray-600 mt-2">Anda yakin untuk Topup sebesar</p>
           <h2 className="text-2xl font-bold">
-            Rp {nominalInput.displayValue} ?
+            Rp {displayTopupValue} ?
           </h2>
 
           <button
             disabled={loadingTopup}
             onClick={handleTopUp}
-            className={`mt-6 w-full ${loadingTopup ? "text-gray-600":"text-red-600"} cursor-pointer`}
+            className={`mt-6 w-full flex items-center justify-center cursor-pointer ${
+              loadingTopup ? "text-gray-400" : "text-red-600"
+            }`}
           >
-            {loadingTopup
-              ? (<><div className="my-spinner"></div> <span>Loading...</span></>)
-              : "Ya, lanjutkan Top Up"}
+            {loadingTopup ? (
+              <>
+                <div className="my-spinner"></div>
+                <span>Loading...</span>
+              </>
+            ) : (
+              "Ya, lanjutkan Top Up"
+            )}
           </button>
 
-          <button
-            disabled={loadingTopup}
-            onClick={() => setIsOpen(false)}
-            className={`mt-6 w-full text-gray-600 cursor-pointer`}
-          >
-            Batalkan
-          </button>
+          {!loadingTopup && (
+            <button
+              onClick={() => setIsOpen(false)}
+              className="mt-4 w-full text-gray-600 cursor-pointer"
+            >
+              Batalkan
+            </button>
+          )}
         </div>
       </CustomAlertDialog>
     </div>
