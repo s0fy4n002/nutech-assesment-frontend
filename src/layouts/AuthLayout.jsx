@@ -7,7 +7,7 @@ export default function AuthLayout() {
       <div className="flex w-full flex-col justify-center items-center px-8 lg:w-1/2">
         <div className="w-full max-w-md py-10">
           <div className="mb-8 flex items-center justify-center gap-2">
-            <img src="/assets/logo.png" alt="Logo" className="h-6 w-6" />{" "}
+            <img src="/logo.png" alt="Logo" className="h-6 w-6" />{" "}
             <span className="text-xl font-bold">SIMS PPOB</span>
           </div>
 

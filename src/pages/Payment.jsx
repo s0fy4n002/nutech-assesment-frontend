@@ -187,7 +187,7 @@ export default function Payment() {
       >
         <div className="text-center">
           <img
-            src="/assets/logo.png"
+            src="/logo.png"
             alt="logo"
             className="mx-auto h-10 w-10 mb-4"
           />
