@@ -16,8 +16,8 @@ export const useCurrencyInput = (initialValue = "") => {
   };
 
   return {
-    value,
-    displayValue: formatNumber(value),
+    value, // 15000
+    displayValue: formatNumber(value), // "15.000"
     handleChange,
     setValue
   };
