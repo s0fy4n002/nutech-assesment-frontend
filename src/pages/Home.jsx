@@ -3,6 +3,7 @@ import PromoSlider from "@/components/pages/PromoSlider";
 import BalanceCard from "@/components/BalanceCard";
 import { Link } from "react-router";
 import apiClient from "@/lib/api";
+import { useSelector } from "react-redux";
 
 export default function Home() {
   const [banners, setBanners] = React.useState([]);
@@ -17,6 +18,11 @@ export default function Home() {
     last_name: "Wibowo",
     profile_image: "/assets/Profile Photo.png",
   });
+
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/login" />;
+  }
 
   useEffect(() => {
     async function fetchData() {

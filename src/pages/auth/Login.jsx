@@ -2,12 +2,15 @@ import { Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import apiClient from "@/lib/api";
+import { useDispatch } from "react-redux";
+import { setToken } from "@/stores/slices/authSlice";
 
 export default function Login() {
   const navigate = useNavigate();
   const [showPass, setShowPass] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,7 +26,7 @@ export default function Login() {
         password: formData.password
       });
 
-      localStorage.setItem("token", response.data.token);
+      dispatch(setToken(response.data.token));
       
       navigate("/");
     } catch (err) {
