@@ -1,17 +1,24 @@
-import { Link, Outlet } from "react-router";
+import { NavLink, Outlet } from "react-router";
 
 export default function RootLayout() {
+  // Fungsi helper untuk menentukan class berdasarkan status aktif
+  const getLinkClass = ({ isActive }) =>
+    isActive 
+      ? "text-red-600 font-bold" // Warna saat aktif
+      : "text-gray-700 hover:text-gray-900"; // Warna saat tidak aktif
+
   return (
     <>
       <nav className="sticky top-0 left-0 right-0 bg-white z-10 border-b">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-          <Link to={"/"} className="flex items-center gap-2 font-bold">
+          <NavLink to="/" className="flex items-center gap-2 font-bold">
             <img src="/assets/logo.png" alt="Logo" className="h-6 w-6" /> SIMS PPOB
-          </Link>
-          <div className="flex gap-6 text-sm font-medium text-gray-700">
-            <Link to="/topup">Top Up</Link>
-            <Link to="/transaction">Transaction</Link>
-            <Link to="/account">Akun</Link>
+          </NavLink>
+          
+          <div className="flex gap-6 text-sm font-medium">
+            <NavLink to="/topup" className={getLinkClass}>Top Up</NavLink>
+            <NavLink to="/transaction" className={getLinkClass}>Transaction</NavLink>
+            <NavLink to="/account" className={getLinkClass}>Akun</NavLink>
           </div>
         </div>
       </nav>
