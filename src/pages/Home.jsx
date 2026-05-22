@@ -38,10 +38,6 @@ export default function Home() {
           apiClient("/services", "GET", null, token),
           apiClient("/banner", "GET", null, token),
         ]);
-        console.log("Profile:", profileResponse.data);
-        console.log("Balance:", balanceResponse.data);
-        console.log("Services:", servicesResponse.data);
-        console.log("Banners:", bannerResponse.data);
 
         setProfile(profileResponse.data);
         setSaldo(balanceResponse.data.saldo);

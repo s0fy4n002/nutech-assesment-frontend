@@ -1,21 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreditCard } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
 import { Navigate, useSearchParams } from "react-router";
-import { SERVICES } from "@/lib/utils";
 import { useCurrencyInput } from "@/hooks/useCurrencyInput";
+import { useSelector } from "react-redux";
+import apiClient from "@/lib/api";
 
 export default function Payment() {
   const [searchParams] = useSearchParams();
   const serviceKey = searchParams.get("service");
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = useSelector((state) => state.auth.token);
+  const nominalInput = useCurrencyInput("");
 
-  const currentService = SERVICES.find((s) => s.id === serviceKey);
+  useEffect(() => {
+      async function fetchData() {
+        try {
+          const servicesResponse = await apiClient("/services", "GET", null, token);
+          setServices(servicesResponse.data);
+          console.log("Services:", servicesResponse.data);
+        } catch (error) {
+          console.error(error);
+        }finally {
+          setLoading(false);
+        }
+      }
+  
+      fetchData();
+    }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const currentService = services.find((s) => s.service_code === serviceKey);
+  console.log("Current Service:", currentService);
 
   if (!currentService) {
     return <Navigate to="/404" replace />;
   }
 
-  const nominalInput = useCurrencyInput("");
 
   return (
     <div className="space-y-8">
@@ -47,12 +72,12 @@ export default function Payment() {
         {/* Detail Layanan (Sesuai gambar) */}
         <div className="flex items-center gap-3 mt-1 mb-6">
           <img
-            src={currentService.icon}
-            alt={currentService.name}
+            src={currentService.service_icon}
+            alt={currentService.service_name}
             className="w-8 h-8 object-contain"
           />
           <h3 className="text-2xl font-bold text-gray-900">
-            {currentService.name}
+            {currentService.service_name}
           </h3>
         </div>
 
