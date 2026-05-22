@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CreditCard } from "lucide-react";
+import { CheckCircle, CreditCard } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
 import { Navigate, useSearchParams } from "react-router";
 import { useCurrencyInput } from "@/hooks/useCurrencyInput";
@@ -7,48 +7,78 @@ import { useSelector } from "react-redux";
 import apiClient from "@/lib/api";
 import Loading from "@/components/Loading";
 import Profile from "@/components/pages/Profile";
+import CustomAlertDialog from "@/components/pages/CustomAlertDialog";
+import { formatNumber } from "@/lib/utils";
 
 export default function Payment() {
   const [searchParams] = useSearchParams();
   const serviceKey = searchParams.get("service");
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [loadingTopup, setLoadingTopup] = useState(false);
+  const [showModalSuccess, setModalSuccess] = useState(false);
+
   const token = useSelector((state) => state.auth.token);
-  
+
   const nominalInput = useCurrencyInput("");
-  
 
   useEffect(() => {
-      async function fetchData() {
-        try {
-          const servicesResponse = await apiClient("/services", "GET", null, token);
-          setServices(servicesResponse.data);
-        
-        } catch (error) {
-          console.error(error);
-        }finally {
-          setLoading(false);
-        }
+    async function fetchData() {
+      try {
+        const servicesResponse = await apiClient(
+          "/services",
+          "GET",
+          null,
+          token,
+        );
+        setServices(servicesResponse.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-  
-      fetchData();
-    }, []);
+    }
+
+    fetchData();
+  }, []);
 
   const currentService = services.find((s) => s.service_code === serviceKey);
 
   useEffect(() => {
     if (currentService?.service_tariff) {
-      nominalInput.setValue(
-        currentService.service_tariff.toString()
-      );
+      nominalInput.setValue(currentService.service_tariff.toString());
     }
   }, [currentService]);
+
+  const handlePayment = async () => {
+   setLoadingTopup(true);
+    try {
+      const servicesResponse = await apiClient(
+        "/transaction",
+        "POST",
+        { service_code: currentService.service_code },
+        token,
+      );
+
+      console.log("Top Up Response:", servicesResponse);
+
+
+      setIsOpen(false);
+      setModalSuccess(true);
+    } catch (error) {
+      console.error("Topup Error:", error);
+    } finally {
+      setLoadingTopup(false);
+    }
+  };
 
   if (loading) {
     return <Loading />;
   }
 
-
+  console.log("Current Service:", currentService);
   if (!currentService) {
     return <Navigate to="/404" replace />;
   }
@@ -81,17 +111,77 @@ export default function Payment() {
             <input
               type="text"
               placeholder="Masukkan nominal"
-              value={nominalInput.displayValue} 
+              value={nominalInput.displayValue}
               onChange={(e) => nominalInput.handleChange(e.target.value)}
               className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 bg-gray-50 focus:outline-none"
             />
           </div>
 
-          <button className="w-full rounded-md py-3 font-semibold bg-red-600 text-white hover:bg-red-700 transition-all active:scale-[0.99]">
+          <button  onClick={() => setIsOpen(true)} className="w-full rounded-md py-3 font-semibold bg-red-600 text-white hover:bg-red-700 transition-all active:scale-[0.99]">
             Bayar
           </button>
         </div>
       </div>
+
+      <CustomAlertDialog
+        isOpen={showModalSuccess}
+        onClose={() => setModalSuccess(false)}
+      >
+        <div className="text-center">
+          <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
+          <p className="text-gray-600 my-2">Pembayaran {currentService.service_name} sebesar.</p>
+          <h2 className="text-xl font-bold mb-2">Rp. {formatNumber(currentService.service_tariff.toString())}</h2>
+          <p className="text-gray-600">Berhasil</p>
+
+          <button
+            onClick={() => setModalSuccess(false)}
+            className="mt-6 w-full text-red-600 cursor-pointer"
+          >
+            Kembali ke Beranda
+          </button>
+        </div>
+      </CustomAlertDialog>
+
+      <CustomAlertDialog
+        isOpen={isOpen}
+        onClose={() => !loadingTopup && setIsOpen(false)}
+      >
+        <div className="text-center">
+          <img
+            src="/assets/logo.png"
+            alt="logo"
+            className="mx-auto h-10 w-10 mb-4"
+          />
+          <p className="text-gray-600 mt-2">Beli {currentService.service_name} senilai</p>
+          <h2 className="text-2xl font-bold">Rp {formatNumber(currentService.service_tariff.toString())} ?</h2>
+
+          <button
+            disabled={loadingTopup}
+            onClick={handlePayment}
+            className={`mt-6 w-full flex items-center justify-center cursor-pointer ${
+              loadingTopup ? "text-gray-400" : "text-red-600"
+            }`}
+          >
+            {loadingTopup ? (
+              <>
+                <div className="my-spinner"></div>
+                <span>Loading...</span>
+              </>
+            ) : (
+              "Ya, lanjutkan Bayar"
+            )}
+          </button>
+
+          {!loadingTopup && (
+            <button
+              onClick={() => setIsOpen(false)}
+              className="mt-4 w-full text-gray-600 cursor-pointer"
+            >
+              Batalkan
+            </button>
+          )}
+        </div>
+      </CustomAlertDialog>
     </div>
   );
 }

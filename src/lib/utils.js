@@ -19,3 +19,8 @@ export const SERVICES = [
     { name: "Zakat", icon: "/assets/Zakat.png", id: "zakat" },
     { name: "Data", icon: "/assets/Paket Data.png", id: "data" },
   ];
+
+export const formatNumber = (val) => {
+  const number = val.replace(/\D/g, "");
+  return number.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
