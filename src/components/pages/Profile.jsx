@@ -21,9 +21,7 @@ export default function Profile() {
       }
     }
 
-    setTimeout(() => {
-      fetchData();
-    }, 1000);
+    fetchData();
   }, []);
 
 

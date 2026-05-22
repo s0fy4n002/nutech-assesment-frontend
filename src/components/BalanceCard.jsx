@@ -2,10 +2,11 @@ import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import BalanceSkeleton from "./skeleton/BalanceSkeleton";
+import apiClient from "@/lib/api";
 
 export default function BalanceCard() {
-  const [showSaldo, setShowSaldo] = useState(false);
-  const [saldo, setSaldo] = useState(0);
+  const [showBalance, setShowBalance] = useState(false);
+  const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
   const token = useSelector((state) => state.auth.token);
 
@@ -13,19 +14,16 @@ export default function BalanceCard() {
     async function fetchData() {
       try {
         const response = await apiClient("/balance", "GET", null, token);
-        setSaldo(response.data.saldo);
+        setBalance(response.data.balance);
       } catch (error) {
         console.error(error);
-      }finally {
+      } finally {
         setLoading(false);
       }
     }
-    setTimeout(() => {
-      fetchData();
-    }, 1700);
+    
+    fetchData();
   }, [token]);
-
-  console.log('saldo: ',saldo);
 
   if(loading){
     return <BalanceSkeleton />;
@@ -34,22 +32,22 @@ export default function BalanceCard() {
   return (
     <div className="relative overflow-hidden rounded-2xl p-6 text-white shadow-lg w-full">
       <img 
-        src="/assets/Background Saldo.png" // Pastikan path gambar Anda benar
+        src="/assets/Background Saldo.png"
         alt="Background" 
-        className="absolute inset-0 h-full w-full object-cover " // opacity-20 agar teks tetap terbaca
+        className="absolute inset-0 h-full w-full object-cover "
       />
 
       <div className="relative z-10">
         <p className="mb-2">Saldo anda</p>
         <h1 className="text-3xl font-bold mb-4">
-          {showSaldo ? `Rp ${saldo.toLocaleString('id-ID')}` : "Rp ••••••••"}
+          {showBalance ? `Rp ${balance.toLocaleString('id-ID')}` : "Rp ••••••••"}
         </h1>
         <p 
           className="text-sm cursor-pointer" 
-          onClick={() => setShowSaldo(!showSaldo)}
+          onClick={() => setShowBalance(!showBalance)}
         >
-          {showSaldo ? "Tutup Saldo" : "Lihat Saldo"}
-          {showSaldo ? <EyeClosedIcon size={16} className="inline ml-1" /> : <EyeIcon size={16}  className="inline ml-1" />}
+          {showBalance ? "Tutup Saldo" : "Lihat Saldo"}
+          {showBalance ? <EyeClosedIcon size={16} className="inline ml-1" /> : <EyeIcon size={16}  className="inline ml-1" />}
         </p>
       </div>
     </div>
