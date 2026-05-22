@@ -8,8 +8,8 @@ export const useCurrencyInput = (initialValue = "") => {
     return number.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
-  const handleChange = (e) => {
-    const rawValue = e.target.value.replace(/\./g, "");
+  const handleChange = (value) => {
+    const rawValue =  value.replace(/\./g, "");
     if (/^\d*$/.test(rawValue)) {
       setValue(rawValue);
     }

@@ -66,7 +66,7 @@ export default function Payment() {
               type="text"
               placeholder="Masukkan nominal"
               value={nominalInput.displayValue} // Gunakan displayValue untuk tampilan
-              onChange={nominalInput.handleChange} // Gunakan handler dari hook
+              onChange={(e) => nominalInput.handleChange(e.target.value)} // Gunakan handler dari hook
               className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 bg-gray-50 focus:outline-none"
             />
           </div>

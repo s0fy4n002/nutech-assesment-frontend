@@ -1,21 +1,12 @@
 import { useState } from "react";
-import { CreditCard } from "lucide-react";
+import { CheckCircle, CreditCard } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
+import CustomAlertDialog from "@/components/pages/CustomAlertDialog";
+import { useCurrencyInput } from "@/hooks/useCurrencyInput";
 export default function TopUp() {
-  // State untuk menampung nominal input
-  const [nominal, setNominal] = useState("");
+  
+  const [isOpen, setIsOpen] = useState(false);
+  const nominalInput = useCurrencyInput("");
 
   // Daftar nominal cepat (quick pick)
   const quickAmounts = [
@@ -26,11 +17,6 @@ export default function TopUp() {
     { label: "Rp250.000", value: 250000 },
     { label: "Rp500.000", value: 500000 },
   ];
-
-  // Fungsi untuk menangani klik nominal cepat
-  const handleQuickAmount = (value) => {
-    setNominal(value);
-  };
 
   return (
     <div className="space-y-8">
@@ -69,41 +55,25 @@ export default function TopUp() {
                 <CreditCard className="h-5 w-5 text-gray-400" />
               </span>
               <input
-                type="number"
+                type="text"
                 placeholder="masukan nominal Top Up"
-                value={nominal}
-                onChange={(e) => setNominal(e.target.value)}
+                value={nominalInput.displayValue}
+                onChange={(e) => nominalInput.handleChange(e.target.value)}
                 className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 placeholder:text-gray-400 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600"
               />
             </div>
 
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button
-                  disabled={!nominal || nominal < 10000 || nominal > 1000000}
-                  className={`w-full rounded-md py-3 font-semibold transition-all ${
-                    nominal >= 10000 && nominal <= 1000000
-                      ? "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                >
-                  Top Up
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your account from our servers.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <button
+              onClick={() => setIsOpen(true)}
+              disabled={!nominalInput.value || nominalInput.value < 10000 || nominalInput.value > 1000000}
+              className={`w-full rounded-md py-3 font-semibold transition-all ${
+                nominalInput.value >= 10000 && nominalInput.value <= 1000000
+                  ? "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Top Up
+            </button>
           </div>
 
           {/* Kolom Kanan: Pilihan Nominal Cepat */}
@@ -111,7 +81,7 @@ export default function TopUp() {
             {quickAmounts.map((item) => (
               <button
                 key={item.value}
-                onClick={() => handleQuickAmount(item.value)}
+                onClick={() => nominalInput.handleChange(item.value.toString())}
                 className="flex items-center justify-center rounded-md border border-gray-300 py-3 px-2 text-sm font-medium text-gray-700 transition-colors hover:border-red-600 hover:text-red-600 active:bg-red-50"
               >
                 {item.label}
@@ -120,6 +90,35 @@ export default function TopUp() {
           </div>
         </div>
       </div>
+
+      {/* <CustomAlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="text-center">
+          <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
+          <h2 className="text-xl font-bold">Berhasil!</h2>
+          <p className="text-gray-600 mt-2">Transaksi Anda telah diproses.</p>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="mt-6 w-full bg-red-600 text-white py-2 rounded-lg"
+          >
+            Kembali
+          </button>
+        </div>
+      </CustomAlertDialog> */}
+
+      <CustomAlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="text-center">
+          {/* <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" /> */}
+          <img src="/assets/logo.png" alt="logo" className="mx-auto h-10 w-10 mb-4" />
+          <p className="text-gray-600 mt-2">Anda yakin untuk Topup sebesar</p>
+          <h2 className="text-2xl font-bold">{nominalInput.displayValue}</h2>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="mt-6 w-full bg-red-600 text-white py-2 rounded-lg"
+          >
+            Kembali
+          </button>
+        </div>
+      </CustomAlertDialog>
     </div>
   );
 }
