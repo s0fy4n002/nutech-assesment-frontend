@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, CircleX, CreditCard } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
-import { Navigate, useSearchParams } from "react-router";
+import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { useCurrencyInput } from "@/hooks/useCurrencyInput";
 import { useDispatch, useSelector } from "react-redux";
 import apiClient from "@/lib/api";
@@ -26,6 +26,10 @@ export default function Payment() {
   const token = useSelector((state) => state.auth.token);
 
   const nominalInput = useCurrencyInput("");
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/login" />;
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -56,7 +60,7 @@ export default function Payment() {
   }, [currentService]);
 
   const handlePayment = async () => {
-   setLoadingTopup(true);
+    setLoadingTopup(true);
     try {
       const servicesResponse = await apiClient(
         "/transaction",
@@ -71,7 +75,7 @@ export default function Payment() {
       setModalSuccess(true);
     } catch (error) {
       setModalError(true);
-      setErrorMessage(error.message)
+      setErrorMessage(error.message);
       console.error("Topup Error:", error);
     } finally {
       setIsOpen(false);
@@ -122,7 +126,10 @@ export default function Payment() {
             />
           </div>
 
-          <button  onClick={() => setIsOpen(true)} className="w-full rounded-md py-3 font-semibold bg-red-600 text-white hover:bg-red-700 transition-all active:scale-[0.99]">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="w-full rounded-md py-3 font-semibold bg-red-600 text-white hover:bg-red-700 transition-all active:scale-[0.99]"
+          >
             Bayar
           </button>
         </div>
@@ -134,8 +141,12 @@ export default function Payment() {
       >
         <div className="text-center">
           <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
-          <p className="text-gray-600 my-2">Pembayaran {currentService.service_name} sebesar.</p>
-          <h2 className="text-xl font-bold mb-2">Rp. {formatNumber(currentService.service_tariff.toString())}</h2>
+          <p className="text-gray-600 my-2">
+            Pembayaran {currentService.service_name} sebesar.
+          </p>
+          <h2 className="text-xl font-bold mb-2">
+            Rp. {formatNumber(currentService.service_tariff.toString())}
+          </h2>
           <p className="text-gray-600">Berhasil</p>
 
           <button
@@ -153,8 +164,12 @@ export default function Payment() {
       >
         <div className="text-center">
           <CircleX className="mx-auto h-16 w-16 text-red-500 mb-4" />
-          <p className="text-gray-600 my-2">Pembayaran {currentService.service_name} sebesar.</p>
-          <h2 className="text-xl font-bold mb-2">Rp. {formatNumber(currentService.service_tariff.toString())}</h2>
+          <p className="text-gray-600 my-2">
+            Pembayaran {currentService.service_name} sebesar.
+          </p>
+          <h2 className="text-xl font-bold mb-2">
+            Rp. {formatNumber(currentService.service_tariff.toString())}
+          </h2>
           <p className="text-gray-600">gagal</p>
 
           <button
@@ -176,8 +191,12 @@ export default function Payment() {
             alt="logo"
             className="mx-auto h-10 w-10 mb-4"
           />
-          <p className="text-gray-600 mt-2">Beli {currentService.service_name} senilai</p>
-          <h2 className="text-2xl font-bold">Rp {formatNumber(currentService.service_tariff.toString())} ?</h2>
+          <p className="text-gray-600 mt-2">
+            Beli {currentService.service_name} senilai
+          </p>
+          <h2 className="text-2xl font-bold">
+            Rp {formatNumber(currentService.service_tariff.toString())} ?
+          </h2>
 
           <button
             disabled={loadingTopup}
