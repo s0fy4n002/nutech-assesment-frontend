@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PromoSlider from "@/components/pages/PromoSlider";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 import apiClient from "@/lib/api";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
