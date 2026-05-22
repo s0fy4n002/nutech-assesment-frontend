@@ -19,7 +19,6 @@ export default function Payment() {
         try {
           const servicesResponse = await apiClient("/services", "GET", null, token);
           setServices(servicesResponse.data);
-          console.log("Services:", servicesResponse.data);
         } catch (error) {
           console.error(error);
         }finally {
@@ -30,17 +29,24 @@ export default function Payment() {
       fetchData();
     }, []);
 
+  const currentService = services.find((s) => s.service_code === serviceKey);
+
+  useEffect(() => {
+    if (currentService?.service_tariff) {
+      nominalInput.setValue(
+        currentService.service_tariff.toString()
+      );
+    }
+  }, [currentService]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  const currentService = services.find((s) => s.service_code === serviceKey);
-  console.log("Current Service:", currentService);
 
   if (!currentService) {
     return <Navigate to="/404" replace />;
   }
-
 
   return (
     <div className="space-y-8">

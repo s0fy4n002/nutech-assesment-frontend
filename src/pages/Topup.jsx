@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle, CreditCard } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
 import CustomAlertDialog from "@/components/pages/CustomAlertDialog";
 import { useCurrencyInput } from "@/hooks/useCurrencyInput";
