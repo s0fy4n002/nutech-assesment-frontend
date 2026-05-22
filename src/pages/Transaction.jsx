@@ -6,9 +6,7 @@ import { useSearchParams, useNavigate } from "react-router";
 
 export default function Transaction() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   
-  // Ambil nilai dari URL, default ke 0 untuk offset dan 5 untuk limit
   const offset = parseInt(searchParams.get("offset") || "0");
   const limit = parseInt(searchParams.get("limit") || "5");
 
