@@ -12,7 +12,7 @@ import Transaction from "./pages/Transaction.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />, // Layout yang punya Navbar/Sidebar
+    element: <RootLayout />,
     children: [
       { index: true, element: <Home /> },
       { path: "topup", element: <TopUp /> },
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/auth",
-    element: <AuthLayout />, // Layout yang punya Navbar/Sidebar
+    element: <AuthLayout />, 
     children: [
       { index: true, element: <Login /> },
       { path: "login", element: <Login /> },
