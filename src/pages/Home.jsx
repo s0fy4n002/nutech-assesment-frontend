@@ -1,20 +1,53 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PromoSlider from "@/components/pages/PromoSlider";
 import BalanceCard from "@/components/BalanceCard";
 import { Link } from "react-router";
-import { SERVICES } from "@/lib/utils";
+import apiClient from "@/lib/api";
 
 export default function Home() {
+  const [banners, setBanners] = React.useState([]);
+  const [services, setServices] = React.useState([]);
 
-  const banners = [
-    { id: 1, image: "/assets/Banner 1.png" },
-    { id: 2, image: "/assets/Banner 2.png" },
-    { id: 3, image: "/assets/Banner 3.png" },
-    { id: 4, image: "/assets/Banner 4.png" },
-    { id: 5, image: "/assets/Banner 5.png" },
-  ];
+  const token = localStorage.getItem("token");
+  const [saldo, setSaldo] = React.useState(0);
 
-  const [saldo, setSaldo] = React.useState(100000);
+  const [profile, setProfile] = React.useState({
+    email: "",
+    first_name: "Kristanto",
+    last_name: "Wibowo",
+    profile_image: "/assets/Profile Photo.png",
+  });
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [
+          profileResponse,
+          balanceResponse,
+          servicesResponse,
+          bannerResponse,
+        ] = await Promise.all([
+          apiClient("/profile", "GET", null, token),
+          apiClient("/balance", "GET", null, token),
+          apiClient("/services", "GET", null, token),
+          apiClient("/banner", "GET", null, token),
+        ]);
+        console.log("Profile:", profileResponse.data);
+        console.log("Balance:", balanceResponse.data);
+        console.log("Services:", servicesResponse.data);
+        console.log("Banners:", bannerResponse.data);
+
+        setProfile(profileResponse.data);
+        setSaldo(balanceResponse.data.saldo);
+        setServices(servicesResponse.data);
+        setBanners(bannerResponse.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -22,13 +55,19 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
         <div className="flex items-center gap-4">
           <img
-            src="/assets/Profile Photo.png"
+            src={profile.profile_image}
+            onError={(e) => {
+              e.target.onerror = null; // Mencegah loop jika default image juga error
+              e.target.src = "/assets/Profile Photo.png"; // Ganti dengan path ikon default Anda
+            }}
             className="w-16 h-16 rounded-full"
             alt="avatar"
           />
           <div>
             <p className="text-gray-500">Selamat datang,</p>
-            <h2 className="text-xl font-bold">Kristanto Wibowo</h2>
+            <h2 className="text-xl font-bold">
+              {profile.first_name} {profile.last_name}
+            </h2>
           </div>
         </div>
 
@@ -37,20 +76,22 @@ export default function Home() {
 
       {/* Menu Grid */}
       <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-4 mb-10">
-        {SERVICES.map((m) => (
+        {services.map((m) => (
           <Link
-            key={m.name}
-            to={`/payment?service=${m.id}`}
+            key={m.service_code}
+            to={`/payment?service=${m.service_code}`}
             className="flex flex-col items-center gap-2 cursor-pointer group"
           >
             <div className="group-hover:bg-gray-100 w-16 h-16 flex items-center justify-center rounded-full transition-colors">
               <img
-                src={m.icon}
-                alt={m.name}
+                src={m.service_icon}
+                alt={m.service_name}
                 className="w-10 h-10 object-contain"
               />
             </div>
-            <span className="text-[10px] text-gray-600">{m.name}</span>
+            <span className="text-[10px] text-gray-600 text-center">
+              {m.service_name}
+            </span>
           </Link>
         ))}
       </div>
