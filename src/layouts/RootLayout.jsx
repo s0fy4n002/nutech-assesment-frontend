@@ -11,7 +11,7 @@ export default function RootLayout() {
           <div className="flex gap-6 text-sm font-medium text-gray-700">
             <Link to="/topup">Top Up</Link>
             <Link to="/transaction">Transaction</Link>
-            <Link to="/akun">Akun</Link>
+            <Link to="/account">Akun</Link>
           </div>
         </div>
       </nav>

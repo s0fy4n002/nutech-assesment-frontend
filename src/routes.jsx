@@ -8,6 +8,7 @@ import Home from "./pages/Home.jsx";
 import TopUp from "./pages/Topup.jsx";
 import Payment from "./pages/Payment.jsx";
 import Transaction from "./pages/Transaction.jsx";
+import Account from "./pages/Account.jsx";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
       { path: "topup", element: <TopUp /> },
       { path: "payment", element: <Payment /> },
       { path: "transaction", element: <Transaction /> },
+      { path: "account", element: <Account /> },
     ],
   },
   {
