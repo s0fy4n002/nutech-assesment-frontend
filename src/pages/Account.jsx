@@ -1,7 +1,8 @@
 import apiClient from "@/lib/api";
+import { logout } from "@/stores/slices/authSlice";
 import { User, AtSign, Pencil } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
 export default function Account() {
@@ -14,6 +15,7 @@ export default function Account() {
     email: "",
     profile_image: "",
   });
+  const dispatch = useDispatch();
 
   const fileInputRef = useRef(null);
   const token = useSelector((state) => state.auth.token);
@@ -95,6 +97,10 @@ export default function Account() {
       alert("Gagal update profil");
     }
   };
+
+  const handleLogout = () => {
+    dispatch(logout())
+  }
 
   if (loading)
     return <div className="flex justify-center py-10">Loading...</div>;
@@ -202,7 +208,7 @@ export default function Account() {
             {isEditing ? "Simpan" : "Edit Profil"}
           </button>
 
-          <button className="w-full rounded-md border border-red-600 bg-white py-3 font-semibold text-red-600 transition-all hover:bg-red-50 active:scale-[0.99]">
+          <button onClick={handleLogout} className="w-full rounded-md border border-red-600 bg-white py-3 font-semibold text-red-600 transition-all hover:bg-red-50 active:scale-[0.99]">
             Logout
           </button>
         </div>
