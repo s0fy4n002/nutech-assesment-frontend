@@ -1,15 +1,40 @@
+import Loading from "@/components/Loading";
+import apiClient from "@/lib/api";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, NavLink, Outlet } from "react-router";
 
 export default function RootLayout() {
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   // Fungsi helper untuk menentukan class berdasarkan status aktif
   const getLinkClass = ({ isActive }) =>
     isActive
       ? "text-red-600 font-bold" // Warna saat aktif
       : "text-gray-700 hover:text-gray-900"; // Warna saat tidak aktif
 
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  if (!isAuthenticated) {
+  const token = useSelector((state) => state.auth.token);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        await apiClient("/profile", "GET", null, token);
+        setIsAuthenticated(true);
+      } catch (error) {
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if(isAuthenticated === false){
     return <Navigate to="/auth/login" />;
   }
 
@@ -18,8 +43,7 @@ export default function RootLayout() {
       <nav className="sticky top-0 left-0 right-0 bg-white z-10 border-b">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
           <NavLink to="/" className="flex items-center gap-2 font-bold">
-            <img src="/logo.png" alt="Logo" className="h-6 w-6" /> SIMS
-            PPOB
+            <img src="/logo.png" alt="Logo" className="h-6 w-6" /> SIMS PPOB
           </NavLink>
 
           <div className="flex gap-6 text-sm font-medium">
