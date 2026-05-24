@@ -42,7 +42,7 @@ export default function BalanceCard() {
         className="absolute inset-0 h-full w-full object-cover "
       />
 
-      <div className="relative z-10">
+      <div className="relative">
         <p className="mb-2">Saldo anda</p>
         <h1 className="text-3xl font-bold mb-4">
           {showBalance ? `Rp ${balance.toLocaleString('id-ID')}` : "Rp ••••••••"}
