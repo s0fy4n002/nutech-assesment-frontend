@@ -1,3 +1,4 @@
+import SpinnerButton from "@/components/SpinnerButton";
 import apiClient from "@/lib/api";
 import { logout } from "@/stores/slices/authSlice";
 import { User, AtSign, Pencil } from "lucide-react";
@@ -9,6 +10,7 @@ export default function Account() {
   const [edited, setIsEdited] = useState(false); // Status foto ada/tidak
   const [isEditing, setIsEditing] = useState(false); // Status tombol Edit/Simpan
   const [loading, setLoading] = useState(true);
+  const [loadingApi, setLoadingApi] = useState(false);
   const [profile, setProfile] = useState({
     first_name: "",
     last_name: "",
@@ -79,7 +81,7 @@ export default function Account() {
       setIsEditing(true);
       return;
     }
-
+    setLoadingApi(true);
     try {
       await apiClient(
         "/profile/update",
@@ -95,6 +97,8 @@ export default function Account() {
       alert("Profil berhasil diupdate");
     } catch (error) {
       alert("Gagal update profil");
+    } finally {
+      setLoadingApi(false);
     }
   };
 
@@ -202,10 +206,11 @@ export default function Account() {
         {/* 3. Buttons Section */}
         <div className="space-y-4 pt-6">
           <button
+            disabled={loadingApi}
             onClick={handleUpdateProfile}
-            className="w-full rounded-md border border-red-600 bg-red-600 py-3 font-semibold text-white transition-all hover:bg-red-700 active:scale-[0.99]"
+            className="w-full rounded-md border flex justify-center border-red-600 bg-red-600 py-3 font-semibold text-white transition-all hover:bg-red-700 active:scale-[0.99]"
           >
-            {isEditing ? "Simpan" : "Edit Profil"}
+            {isEditing ? (loadingApi ? <SpinnerButton /> : "Simpan") : "Edit Profil"}
           </button>
 
           <button onClick={handleLogout} className="w-full rounded-md border border-red-600 bg-white py-3 font-semibold text-red-600 transition-all hover:bg-red-50 active:scale-[0.99]">
