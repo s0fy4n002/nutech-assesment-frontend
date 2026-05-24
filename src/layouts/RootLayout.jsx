@@ -1,24 +1,26 @@
 import Loading from "@/components/Loading";
 import apiClient from "@/lib/api";
+import { setProfile } from "@/stores/slices/authSlice";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate, NavLink, Outlet } from "react-router";
 
 export default function RootLayout() {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const dispatch = useDispatch()
 
-  // Fungsi helper untuk menentukan class berdasarkan status aktif
   const getLinkClass = ({ isActive }) =>
     isActive
-      ? "text-red-600 font-bold" // Warna saat aktif
-      : "text-gray-700 hover:text-gray-900"; // Warna saat tidak aktif
+      ? "text-red-600 font-bold" 
+      : "text-gray-700 hover:text-gray-900";
 
   const token = useSelector((state) => state.auth.token);
   useEffect(() => {
     async function fetchData() {
       try {
-        await apiClient("/profile", "GET", null, token);
+        const profileResponse = await apiClient("/profile", "GET", null, token);
+        dispatch(setProfile(profileResponse.data));
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);

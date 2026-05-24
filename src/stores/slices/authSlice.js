@@ -5,8 +5,12 @@ const authSlice = createSlice({
   initialState: {
     token: localStorage.getItem('token') || null,
     isAuthenticated: !!localStorage.getItem('token'),
+    profile: null,
   },
   reducers: {
+    setProfile: (state, action) => {
+      state.profile = action.payload;
+    },
     setToken: (state, action) => {
       state.token = action.payload;
       state.isAuthenticated = true;
@@ -20,5 +24,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setToken, logout } = authSlice.actions;
+export const { setToken, logout, setProfile } = authSlice.actions;
 export default authSlice.reducer;
