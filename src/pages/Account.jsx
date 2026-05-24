@@ -103,8 +103,8 @@ export default function Account() {
   };
 
   const handleLogout = () => {
-    dispatch(logout())
-  }
+    dispatch(logout());
+  };
 
   if (loading)
     return <div className="flex justify-center py-10">Loading...</div>;
@@ -156,7 +156,7 @@ export default function Account() {
               type="email"
               value={profile.email}
               disabled
-              className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-500 bg-gray-50 focus:outline-none"
+              className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-500 bg-gray-50 cursor-not-allowed focus:outline-none"
             />
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function Account() {
               onChange={(e) =>
                 setProfile({ ...profile, first_name: e.target.value })
               }
-              className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 focus:border-red-600 focus:outline-none disabled:bg-white"
+              className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 focus:border-red-600 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
             />
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function Account() {
               onChange={(e) =>
                 setProfile({ ...profile, last_name: e.target.value })
               }
-              className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 focus:border-red-600 focus:outline-none disabled:bg-white"
+              className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 focus:border-red-600 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
             />
           </div>
         </div>
@@ -210,10 +210,21 @@ export default function Account() {
             onClick={handleUpdateProfile}
             className="w-full rounded-md border flex justify-center border-red-600 bg-red-600 py-3 font-semibold text-white transition-all hover:bg-red-700 active:scale-[0.99]"
           >
-            {isEditing ? (loadingApi ? <SpinnerButton /> : "Simpan") : "Edit Profil"}
+            {isEditing ? (
+              loadingApi ? (
+                <SpinnerButton />
+              ) : (
+                "Simpan"
+              )
+            ) : (
+              "Edit Profil"
+            )}
           </button>
 
-          <button onClick={handleLogout} className="w-full rounded-md border border-red-600 bg-white py-3 font-semibold text-red-600 transition-all hover:bg-red-50 active:scale-[0.99]">
+          <button
+            onClick={handleLogout}
+            className="w-full rounded-md border border-red-600 bg-white py-3 font-semibold text-red-600 transition-all hover:bg-red-50 active:scale-[0.99]"
+          >
             Logout
           </button>
         </div>
