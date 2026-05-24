@@ -12,11 +12,16 @@ const topupSlice = createSlice({
     displayAmount: 0,
     topupValue: 0,
     displayTopupValue: "",
+    displayBalance: false,
   },
   reducers: {
     setAmount: (state, action) => {
       state.amount = action.payload;
       state.displayAmount = formatNumber(action.payload.toString());
+    },
+
+    setDisplayBalance: (state, action) => {
+      state.displayBalance = action.payload;
     },
 
     setTopupValue: (state, action) => {
@@ -39,5 +44,5 @@ const topupSlice = createSlice({
  
 });
 
-export const { setAmount, setTopupValue, updateAmount, updateAmountPayment } = topupSlice.actions;
+export const { setAmount, setTopupValue, updateAmount, updateAmountPayment, setDisplayBalance } = topupSlice.actions;
 export default topupSlice.reducer;
