@@ -45,7 +45,7 @@ export default function RootLayout() {
       <nav className="sticky top-0 left-0 right-0 bg-white z-10 border-b">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
           <NavLink to="/" className="flex items-center gap-2 font-bold">
-            <img src="/logo.png" alt="Logo" className="h-6 w-6" /> SIMS PPOB
+            <img src="/logo.png" alt="Logo" className="h-6 w-6" /> <span className="hidden md:block">SIMS PPOB</span>
           </NavLink>
 
           <div className="flex gap-6 text-sm font-medium">
