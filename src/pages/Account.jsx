@@ -1,52 +1,24 @@
 import SpinnerButton from "@/components/SpinnerButton";
 import apiClient from "@/lib/api";
-import { logout } from "@/stores/slices/authSlice";
+import { logout, setProfile } from "@/stores/slices/authSlice";
 import { User, AtSign, Pencil } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
 export default function Account() {
-  const [edited, setIsEdited] = useState(false); // Status foto ada/tidak
   const [isEditing, setIsEditing] = useState(false); // Status tombol Edit/Simpan
-  const [loading, setLoading] = useState(true);
   const [loadingApi, setLoadingApi] = useState(false);
-  const [profile, setProfile] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    profile_image: "",
+  const profileFromRedux = useSelector((state) => state.auth.profile);
+  const [formData, setFormData] = useState({
+    first_name: profileFromRedux.first_name,
+    last_name: profileFromRedux.last_name
   });
   const dispatch = useDispatch();
 
   const fileInputRef = useRef(null);
   const token = useSelector((state) => state.auth.token);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const profileResponse = await apiClient("/profile", "GET", null, token);
-        const data = profileResponse.data;
-        setProfile(data);
-
-        // Cek apakah sudah ada foto
-        if (
-          data.profile_image &&
-          data.profile_image.split("/").pop() !== "null"
-        ) {
-          setIsEdited(true);
-        }
-      } catch (error) {
-        navigate("/");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [token, navigate]);
-
-  // Handle Upload Image
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -57,7 +29,6 @@ export default function Account() {
       return;
     }
 
-    // Validasi Tipe
     if (!file.type.startsWith("image/")) {
       alert("Mohon upload file gambar.");
       return;
@@ -83,15 +54,16 @@ export default function Account() {
     }
     setLoadingApi(true);
     try {
-      await apiClient(
+      const profileResponse = await apiClient(
         "/profile/update",
         "PUT",
         {
-          first_name: profile.first_name,
-          last_name: profile.last_name,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
         },
         token,
       );
+      dispatch(setProfile(profileResponse.data))
 
       setIsEditing(false);
       alert("Profil berhasil diupdate");
@@ -106,16 +78,13 @@ export default function Account() {
     dispatch(logout());
   };
 
-  if (loading)
-    return <div className="flex justify-center py-10">Loading...</div>;
-
   return (
     <div className="flex flex-col items-center py-10">
       {/* 1. Profile Picture Section */}
       <div className="relative mb-4">
         <div className="h-32 w-32 overflow-hidden rounded-full border border-gray-200">
           <img
-            src={profile.profile_image}
+            src={profileFromRedux.profile_image}
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = "/assets/Profile Photo.png";
@@ -140,7 +109,7 @@ export default function Account() {
       </div>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-10">
-        {profile.first_name} {profile.last_name}
+        {profileFromRedux.first_name} {profileFromRedux.last_name}
       </h1>
 
       {/* 2. Form Section */}
@@ -154,7 +123,7 @@ export default function Account() {
             </span>
             <input
               type="email"
-              value={profile.email}
+              value={profileFromRedux.email}
               disabled
               className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-500 bg-gray-50 cursor-not-allowed focus:outline-none"
             />
@@ -172,10 +141,10 @@ export default function Account() {
             </span>
             <input
               type="text"
-              value={profile.first_name}
+              value={formData.first_name}
               disabled={!isEditing}
               onChange={(e) =>
-                setProfile({ ...profile, first_name: e.target.value })
+                setFormData({ ...formData, first_name: e.target.value })
               }
               className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 focus:border-red-600 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
             />
@@ -193,10 +162,10 @@ export default function Account() {
             </span>
             <input
               type="text"
-              value={profile.last_name}
+              value={formData.last_name}
               disabled={!isEditing}
               onChange={(e) =>
-                setProfile({ ...profile, last_name: e.target.value })
+                setFormData({ ...formData, last_name: e.target.value })
               }
               className="block w-full rounded-md border border-gray-300 py-3 pl-10 pr-4 text-gray-900 focus:border-red-600 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
             />
