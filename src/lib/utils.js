@@ -24,3 +24,17 @@ export const formatNumber = (val) => {
   const number = val.replace(/\D/g, "");
   return number.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
+
+export const formatToIndonesian = (isoString) => {
+  const date = new Date(isoString);
+  
+  return date.toLocaleString('id-ID', {
+    timeZone: 'Asia/Jakarta',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false // Memastikan format 24 jam
+  }).replace('.', ':'); // Mengganti titik pemisah jam bawaan ID menjadi titik dua
+};

@@ -1,5 +1,6 @@
 import Profile from "@/components/pages/Profile";
 import apiClient from "@/lib/api";
+import { formatToIndonesian } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router";
@@ -82,7 +83,7 @@ export default function Transaction() {
                   {t.transaction_type === "TOPUP" ? "+" : "-"} Rp
                   {t.total_amount.toLocaleString("id-ID")}
                 </h4>
-                <p className="text-sm text-gray-400 mt-1">{t.created_on}</p>
+                <p className="text-sm text-gray-400 mt-1">{formatToIndonesian(t.created_on)} WIB</p>
               </div>
               <p className="text-sm font-medium text-gray-600">
                 {t.description}
